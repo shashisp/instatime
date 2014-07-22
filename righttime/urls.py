@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     #url(r'^$', 'main.views.IndexView'),
     url(r'^$', IndexView.as_view()),
     url(r'^gen/', 'main.views.generate'),
+    url(r'^test/', 'main.views.test'),
     # url(r'^righttime/', include('righttime.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

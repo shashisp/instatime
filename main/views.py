@@ -22,6 +22,10 @@ class IndexView(TemplateView):
 
 pass
 
+def test(request):
+	name = "test"
+	context = {'name' : [name]}
+	return render_to_response('graph.html', context)
 
 def generate(request):
 	code = request.GET['code']
@@ -32,13 +36,8 @@ def generate(request):
 	data = {'client_id': '50831fa41c5a4d3cba82f9bd14bb4a86', 'client_secret' : 'fd9652076534434eb4550015b119a417','grant_type':'authorization_code','code':code, 'redirect_uri':'http://localhost:8000/gen'}
 	r = requests.post('https://api.instagram.com/oauth/access_token', data=data)
 	
-	#print r.json()
-	
 	u_id = r.json()['user']['id']
 	token = r.json()['access_token']
-	#print code
-	#print u_id
-	#print token
 	followers = []
 	print u_id
 	print token
@@ -46,19 +45,19 @@ def generate(request):
 
 	x = requests.get('https://api.instagram.com/v1/users/'+str(u_id)+'/followed-by?access_token='+token)
 	y = x.json()['data']
-	print y
-	print "| data"
+	
+	
 	
 
 	for i in y:
 		followers.append(i['id'])
-	print followers
+	
 	activity = []
 	for i in followers:
 		p = requests.get('https://api.instagram.com/v1/users/'+i+'/media/recent/?access_token='+token)
 
 	q = p.json()['data']
-	print q
+	
 	
 	time = []
 	for j in q:
@@ -66,20 +65,59 @@ def generate(request):
 	print time
 	
 
-	##
+	
 	converted_time = []
 	for k in time:
-		print(
+		converted_time.append(
     datetime.datetime.fromtimestamp(
         int(k)
     ).strftime('%Y-%m-%d %H:%M:%S')
-)
-		#datetime.datetime.fromtimestamp(k).strftime('%H:%M:%S')
+)    
+	print converted_time
 
-	#print converted_time
-
-	return HttpResponseRedirect('/test')
 	
+	dates = []
+	for i in converted_time:
+		f = int(i.split()[1].split(':')[0])
+		l = int(i.split()[1].split(':')[1])
+		if l>30:
+			f+=1
+			if f> 24:
+				f=1;
+		dates.append(i.split()[0] + "," + str(f))
+	timings = []
+	# for i in converted_time:
+	# 	timings.append(i.split()[1])
+	print ("\n").join(dates)
+	"""
+	print "test"	#print timings
+			f = int(i.split(':')[0])
+		l = int(i.split(':')[1])
+		if l>30:
+		for i	for i in  in 		f+=1
+
+	print dates
+	newtime = []
+	for i in timingsstr(:)
+	fsplit(':')[0])
+		l = int(i.split(':')[1])
+		if l>30:
+			f+=1
+		newtime.append(f)
+	print newtime
+	
+	#a = json.dumps(timings)
+	context = { 'dates' : dates, 'newtime' : newtime}
+	print context
+	"""
+	date_string = "Date,Timings\\n" + ("\\n").join(dates)
+	context = {'date_string' : date_string}
+	return render_to_response('graph.html', context)
+	"""
+	return HttpResponse(context, mimetype='application/json')
+	
+	return HttpResponseRedirect('/test')
+	"""
 
 
 
